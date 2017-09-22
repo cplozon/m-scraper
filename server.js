@@ -1,20 +1,49 @@
-/* Students: Using the tools and techniques you learned so far,
- * you will scrape a website of your choice, then place the data
- * in a MongoDB database. Be sure to make the database and collection
- * before running this exercise.
-
- * Consult the assignment files from earlier in class
- * if you need a refresher on Cheerio. */
 
 // Dependencies
 var express = require("express");
+var exphbs = require("express-handlebars");
 var mongojs = require("mongojs");
 // Require request and cheerio. This makes the scraping possible
+var mongoose = require("mongoose");
+//set mongoose to leverage built in JS
 var request = require("request");
+//request makes http request for html page ie fox news
+var bodyParser = require("body-parser");
 var cheerio = require("cheerio");
-
 // Initialize Express
 var app = express();
+
+mongoose.Promise = Promise;
+
+// Database configuration
+var databaseUrl = "scraper";
+var collections = ["scrapedData"];
+
+// Hook mongojs configuration to the db variable
+var db = mongojs(databaseUrl, collections);
+db.on("error", function(error) {
+  console.log("Database Error:", error);
+});
+
+// Main route (simple Hello Message)
+app.get("/", function(req, res) {
+  res.send("Hello UNC");
+});
+
+//get data from db
+app.get("/all", function(req,res){
+  //find all results from teh scrapeddata collection in db
+  db.scrapedData.find({}, function(error,found){
+    if (error) {
+      console.log(error);
+    }
+    else {
+      res.json(found);
+    }
+  });
+});
+
+//Scrape data from fox and place it into the mongodb
 
 request("http://www.foxnews.com/", function(error, response, html) {
 
@@ -37,37 +66,6 @@ request("http://www.foxnews.com/", function(error, response, html) {
 });
 
 
-
-// Database configuration
-var databaseUrl = "scraper";
-var collections = ["scrapedData"];
-
-// Hook mongojs configuration to the db variable
-var db = mongojs(databaseUrl, collections);
-
-
-db.on("error", function(error) {
-  console.log("Database Error:", error);
-});
-
-
-
-// Main route (simple Hello World Message)
-app.get("/", function(req, res) {
-  res.send("Hello world");
-});
-
-
-app.get("/all", function(req,res){
-  db.scrapedData.find({}, function(error,found){
-    if (error) {
-      console.log(error);
-    }
-    else {
-      res.json(found);
-    }
-  });
-});
 
 
 // app.get("/name", function(req,res){
