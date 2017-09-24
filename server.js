@@ -2,6 +2,7 @@
 // Dependencies
 var express = require("express");
 var exphbs = require("express-handlebars");
+var logger = require("morgan");
 var mongojs = require("mongojs");
 // Require request and cheerio. This makes the scraping possible
 var mongoose = require("mongoose");
@@ -10,10 +11,27 @@ var request = require("request");
 //request makes http request for html page ie fox news
 var bodyParser = require("body-parser");
 var cheerio = require("cheerio");
+var Note = require("./models/Note.js");
+//requires the file and values from the file created called Note.js
+var Article = require("./models/Article.js");
+//requires the file and values from the file created called Article.js
 // Initialize Express
 var app = express();
 
+//set mongoose to leverage built in JS ES6 Promises
 mongoose.Promise = Promise;
+
+//Use morgan and body parser with the app
+app.use(logger("dev"));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
+
+// making public a static dir
+app.use(express.static("public"));
+
+mongoose.connect("mongodb://localhost/foxnewsdata");
+var db = mongoose.connection;
 
 // Database configuration
 var databaseUrl = "scraper";
@@ -32,7 +50,7 @@ app.get("/", function(req, res) {
 
 //get data from db
 app.get("/all", function(req,res){
-  //find all results from teh scrapeddata collection in db
+  //find all results from the scrapeddata collection in db
   db.scrapedData.find({}, function(error,found){
     if (error) {
       console.log(error);
@@ -45,25 +63,39 @@ app.get("/all", function(req,res){
 
 //Scrape data from fox and place it into the mongodb
 
+app.get("/scrape", function (req,res){
+  //make request for news section of fox
 request("http://www.foxnews.com/", function(error, response, html) {
-
+ //load html body from request in cheerio
 	var $ = cheerio.load(html);
-	var results = [];
+  $("h2.title").each(function(i, element){
+    //Save the text and href of each link 
+    var title = $(element).children("a").text();
+    var link = $(element).children("a").attr("href");
 
-	$("h2.title").each(function(i, element) {
-
-		var link = $(element).children().attr("href");
-    	var title = $(element).text();
-
-    	results.push({
-      title: title,
-      //link: link
-    });
+    // if the found element has both title and link = &&
+    if (title && link) {
+      // instert data into db
+      db.scrapedData.insert({
+        title: title,
+        link: link,
+      },
+      function(err, inserted){
+        if (err){
+          console.log(err);
+        }
+        else {
+          //log data if no error
+          console.log(inserted);
+        }
+      });
+    }
   });
-
-  // Log the results once you've looped through each of the elements found with cheerio
-  console.log(results);
 });
+	// send a scrape complete message to browser
+  res.send("Scrape Complete");
+});
+
 
 
 

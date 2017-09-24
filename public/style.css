@@ -1,0 +1,62 @@
+#main-header{
+  background: #003b6f;
+  color: white;
+  text-align: left;
+}
+
+#MongoScraper {
+  font-size: 32px;
+  padding: 20px;
+}
+
+#home {
+  font-size: 22px;
+  font-style: bold;
+  /*background: grey;*/
+  padding: 20px;
+}
+
+#saved-articles {
+  font-size: 22px;
+  padding: 20px;
+}
+
+#scrapearticles {
+  padding: 20px;
+  text-align: left;
+}
+
+
+#main-body{
+     background: url("newspaper.jpeg") no-repeat center fixed;
+     -webkit-background-size: cover;
+  	 -moz-background-size: cover;
+     -o-background-size: cover;
+     background-size: cover;
+     min-height: 100%;
+  	 width: 100%;
+  	 height: 500px;  
+  	top: 0;
+  	left: 0;
+    }
+
+#main-body-align {
+  padding-top: 55px;
+}
+.atitle {
+  font-size: 54px;
+  font-style: bold;
+  color: black;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 40px;
+  color: black;
+  text-align: center;
+}
+
+.two {
+  background: url("newspaper.jpeg");
+
+}
