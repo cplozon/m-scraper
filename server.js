@@ -3,7 +3,6 @@
 var express = require("express");
 var exphbs = require("express-handlebars");
 var logger = require("morgan");
-var mongojs = require("mongojs");
 // Require request and cheerio. This makes the scraping possible
 var mongoose = require("mongoose");
 //set mongoose to leverage built in JS
@@ -14,12 +13,12 @@ var cheerio = require("cheerio");
 var Note = require("./models/Note.js");
 //requires the file and values from the file created called Note.js
 var Article = require("./models/Article.js");
+//set mongoose to leverage built in JS ES6 Promises
+mongoose.Promise = Promise;
+
 //requires the file and values from the file created called Article.js
 // Initialize Express
 var app = express();
-
-//set mongoose to leverage built in JS ES6 Promises
-mongoose.Promise = Promise;
 
 //Use morgan and body parser with the app
 app.use(logger("dev"));
@@ -38,27 +37,12 @@ var databaseUrl = "scraper";
 var collections = ["scrapedData"];
 
 // Hook mongojs configuration to the db variable
-var db = mongojs(databaseUrl, collections);
 db.on("error", function(error) {
   console.log("Database Error:", error);
 });
-
-// Main route (simple Hello Message)
-app.get("/", function(req, res) {
-  res.send("Hello UNC");
-});
-
-//get data from db
-app.get("/all", function(req,res){
-  //find all results from the scrapeddata collection in db
-  db.scrapedData.find({}, function(error,found){
-    if (error) {
-      console.log(error);
-    }
-    else {
-      res.json(found);
-    }
-  });
+// Success message for mongoose
+db.once("open", function(){
+  console.log("Mongoose conenction successful");
 });
 
 //Scrape data from fox and place it into the mongodb
@@ -70,70 +54,82 @@ request("http://www.foxnews.com/", function(error, response, html) {
 	var $ = cheerio.load(html);
   $("h2.title").each(function(i, element){
     //Save the text and href of each link 
-    var title = $(element).children("a").text();
-    var link = $(element).children("a").attr("href");
+    var result = {};
+    //Add text and href of links and save as an object
+    result.title = $(this).children("a").text();
+    result.link = $(this).children("a").attr("href");
 
-    // if the found element has both title and link = &&
-    if (title && link) {
-      // instert data into db
-      db.scrapedData.insert({
-        title: title,
-        link: link,
-      },
-      function(err, inserted){
-        if (err){
+    var entry = new Article(result);
+
+    entry.save(function(err,doc){
+      if(err){
+        console.log(err);
+      }
+      else {
+        console.log(doc);
+      }
+
+      });
+    });
+  });
+	// send a scrape complete message to browser
+  res.send("Scrape Complete");
+});
+
+// get articles we scraped from the mongo DB
+app.get("/articles", function(req, res){
+  Article.find({}, function(error,data){
+    // Log errors if any
+    if(error) {
+      console.log(error);
+    }
+    // or send the doc to the broweser
+    else {
+      res.json(doc);
+    }
+  });
+});
+
+app.get("/articles/:id", function(req,res){
+  //query that inds the matching art in our db
+  Article.findOne({"_id": req.params.id})
+  //populates the notes associated with it
+  .populate("note")
+  //execute query
+  .exec(function(error,doc){
+    if(error) {
+      console.log(error);
+    }
+    else {
+      res.json(doc);
+    }
+  });
+});
+
+app.post("/articles/:id", function(req,res){
+  //Creat a new note and pass the body to the entry
+  var newNote = new Note(req.body);
+  //save the new note to the db
+  newNote.save(function(error,doc){
+    if (error){
+      console.log(error);
+    }
+    else {
+      //use article id to find and update the note
+      Article.findOneAndUpdate({"_id": req.params.id}, {"note": doc._id})
+      //execute query
+      .exec(function(err,doc){
+        if (err) {
           console.log(err);
         }
-        else {
-          //log data if no error
-          console.log(inserted);
+        else{
+          res.send(doc);
         }
       });
     }
   });
 });
-	// send a scrape complete message to browser
-  res.send("Scrape Complete");
-});
 
-
-
-
-
-// app.get("/name", function(req,res){
-//   //query - in db go to animals collection and find everything
-//   //sorit it by name - 1 means ascending order
-//   db.scrapedData.find().sort({ name: 1}, function(error,found){
-//     if (error) {
-//       console.log(error);
-//     }
-//     else {
-//       res.json(found);
-//     }
-//   });
-// });
-
-
-
-/* TODO: make two more routes
- * -/-/-/-/-/-/-/-/-/-/-/-/- */
-
-// Route 1
-// =======
-// This route will retrieve all of the data
-// from the scrapedData collection as a json (this will be populated
-// by the data you scrape using the next route)
-
-// Route 2
-// =======
-// When you visit this route, the server will
-// scrape data from the site of your choice, and save it to
-// MongoDB.
-// TIP: Think back to how you pushed website data
-// into an empty array in the last class. How do you
-// push it into a MongoDB collection instead?
-
-/* -/-/-/-/-/-/-/-/-/-/-/-/- */
 
 // Listen on port 3000
 app.listen(3000, function() {
