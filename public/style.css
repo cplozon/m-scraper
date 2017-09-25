@@ -12,14 +12,50 @@
 #home {
   font-size: 22px;
   font-style: bold;
-  /*background: grey;*/
-  padding: 20px;
+  padding: 25px;
 }
 
-#saved-articles {
-  font-size: 22px;
-  padding: 20px;
+#savedarticles {
+  padding: 25px;
+  float:left;
+  background-color: #003b6f;
 }
+
+#saved-articles,
+#scrape,
+#empty
+ {
+    background-color: #003b6f;
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+#saved-articles,
+#scrape,
+#empty
+ {
+    background-color: #003b6f; 
+    color: black; 
+    border: 2px solid grey;
+}
+
+#saved-articles:hover,
+#scrape:hover,
+#empty:hover
+{
+    background-color: grey;
+    color: white;
+}
+
 
 #scrapearticles {
   padding: 20px;
@@ -57,6 +93,6 @@
 }
 
 .two {
-  background: url("newspaper.jpeg");
+  background: url("paperbackground.jpeg");
 
 }

@@ -78,7 +78,7 @@ request("http://www.foxnews.com/", function(error, response, html) {
 
 // get articles we scraped from the mongo DB
 app.get("/articles", function(req, res){
-  Article.find({}, function(error,data){
+  Article.find({}, function(error,doc){
     // Log errors if any
     if(error) {
       console.log(error);
@@ -91,7 +91,7 @@ app.get("/articles", function(req, res){
 });
 
 app.get("/articles/:id", function(req,res){
-  //query that inds the matching art in our db
+  //query that finds the matching article in our db
   Article.findOne({"_id": req.params.id})
   //populates the notes associated with it
   .populate("note")

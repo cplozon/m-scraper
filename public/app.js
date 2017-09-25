@@ -1,11 +1,25 @@
-// Grab the articles as a json
-$.getJSON("/articles", function(data) {
-  // For each one
-  for (var i = 0; i < data.length; i++) {
-    // Display the apropos information on the page
-    $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
-  }
+
+
+
+var articleCounter = 0;
+// globlal variable to set the article counter to 0
+$("#scrape").on("click", function(event){
+  event.preventDefault();
+  articleCounter = 0;
+  // Grab the articles as a json
+  $.getJSON("/articles", function(data) {
+    
+      // For each one
+      for (var i = 0; i < 25; i++) {
+      // Display the information on the page
+        $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
+        articleCounter++;
+      }
+      alert("You have added " + articleCounter + " articles!")
+    
+  });
 });
+
 
 
 // Whenever someone clicks a p tag
@@ -70,3 +84,9 @@ $(document).on("click", "#savenote", function() {
   $("#titleinput").val("");
   $("#bodyinput").val("");
 });
+
+// To delete your articles or clear
+$("#empty").on("click", function(event){
+  $("#articles").empty();
+  articleCounter = 0;
+})
