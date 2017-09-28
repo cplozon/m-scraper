@@ -9,11 +9,11 @@
   padding: 20px;
 }
 
-#home {
+/*#home {
   font-size: 22px;
   font-style: bold;
   padding: 25px;
-}
+}*/
 
 #savedarticles {
   padding: 25px;
@@ -23,7 +23,8 @@
 
 #saved-articles,
 #scrape,
-#empty
+#empty,
+#home
  {
     background-color: #003b6f;
     border: none;
@@ -41,7 +42,8 @@
 
 #saved-articles,
 #scrape,
-#empty
+#empty,
+#home
  {
     background-color: #003b6f; 
     color: black; 
@@ -50,7 +52,8 @@
 
 #saved-articles:hover,
 #scrape:hover,
-#empty:hover
+#empty:hover,
+#hoome:hover
 {
     background-color: grey;
     color: white;
@@ -62,6 +65,14 @@
   text-align: left;
 }
 
+#no-articles,
+#view-news 
+{
+  text-align: center;
+  font-size: 30px;
+  color: white;
+  padding: 15px;
+}
 
 #main-body{
      background: url("newspaper.jpeg") no-repeat center fixed;
@@ -95,4 +106,48 @@
 .two {
   background: url("paperbackground.jpeg");
 
+}
+
+/* modal styles */
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
+    box-shadow: 0 3px 9px rgba(0,0,0,.5);
+}
+
+.modal-header {
+    padding: 15px;
+    border-bottom: 1px solid #e5e5e5;
+    color: #B2484C;
+}
+
+.modal-body {
+    padding: 15px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.modal-footer {
+    padding: 15px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.btn-primary{
+    color: #fff;
+    background-color: #B2484C !important;
+    border-color: #B2484C !important;
+    text-transform: uppercase;
+
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #B2484C !important;
+    border-color: #B2484C !important;
 }

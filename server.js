@@ -2,6 +2,7 @@
 // Dependencies
 var express = require("express");
 var exphbs = require("express-handlebars");
+var swal = require("sweetalert");
 var logger = require("morgan");
 // Require request and cheerio. This makes the scraping possible
 var mongoose = require("mongoose");
@@ -15,6 +16,7 @@ var Note = require("./models/Note.js");
 var Article = require("./models/Article.js");
 //set mongoose to leverage built in JS ES6 Promises
 mongoose.Promise = Promise;
+
 
 //requires the file and values from the file created called Article.js
 // Initialize Express
@@ -49,26 +51,25 @@ db.once("open", function(){
 
 app.get("/scrape", function (req,res){
   //make request for news section of fox
-request("http://www.foxnews.com/", function(error, response, html) {
- //load html body from request in cheerio
-	var $ = cheerio.load(html);
-  $("h2.title").each(function(i, element){
-    //Save the text and href of each link 
-    var result = {};
-    //Add text and href of links and save as an object
-    result.title = $(this).children("a").text();
-    result.link = $(this).children("a").attr("href");
+  request("http://www.foxnews.com/", function(error, response, html) {
+  //load html body from request in cheerio
+	 var $ = cheerio.load(html);
+    $("h2.title").each(function(i, element){
+      //Save the text and href of each link 
+      var result = {};
+      //Add text and href of links and save as an object
+      result.title = $(this).children("a").text();
+      result.link = $(this).children("a").attr("href");
 
-    var entry = new Article(result);
+      var entry = new Article(result);
 
-    entry.save(function(err,doc){
-      if(err){
-        console.log(err);
-      }
-      else {
-        console.log(doc);
-      }
-
+      entry.save(function(err,doc){
+        if(err){
+          console.log(err);
+        }
+        else {
+          console.log(doc);
+        }
       });
     });
   });
@@ -106,8 +107,9 @@ app.get("/articles/:id", function(req,res){
   });
 });
 
-app.post("/articles/:id", function(req,res){
-  //Creat a new note and pass the body to the entry
+app.post("/articles/:article_id/note", function(req,res){
+  console.log(req);
+  //Create a new note and pass the body to the entry
   var newNote = new Note(req.body);
   //save the new note to the db
   newNote.save(function(error,doc){
@@ -129,6 +131,27 @@ app.post("/articles/:id", function(req,res){
     }
   });
 });
+
+app.get("/articles/:article_id/note", function(req,res){
+
+  Note.findOne({"articleId": req.params.article_id})
+
+  .exec(function(error,doc){
+    if(error) {
+      console.log(error);
+    }
+    else {
+      res.json(doc);
+    }
+  });
+});
+
+
+
+app.get("/delete/:id", function(req,res){
+  //remove a note using the object id
+  
+})
 
 
 // Listen on port 3000

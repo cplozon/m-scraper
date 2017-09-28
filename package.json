@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/cplozon/m-scraper/issues"
   },
-  "homepage": "https://github.com/cplozon/m-scraper#readme"
+  "homepage": "https://github.com/cplozon/m-scraper#readme",
+  "dependencies": {
+    "sweetalert": "^2.0.3"
+  }
 }
