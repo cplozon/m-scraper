@@ -33,6 +33,7 @@ $(document).on("click", "p", function() {
   $("#notes").empty();
   // Save the id from the p tag
   var thisId = $(this).attr("data-id");
+  alert("You are saving this article" + "data-id");
 
   // Now make an ajax call for the Article
   $.ajax({
