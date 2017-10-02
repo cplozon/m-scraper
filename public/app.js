@@ -16,8 +16,8 @@ $("#scrape").on("click", function(event){
       // Display the information on the page
         $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + 
           "<br />" + data[i].link + "</p>" + 
-          '<button class= "saveArticle">Save Article</button></button>' +
-          '<button class= "addNotes">Add Notes</button>');
+          '<button id= "saveArticle">Save Article</button></button>' +
+          '<button id= "addNotes">Add Notes</button>');
         articleCounter++;
       }
       alert("You have added " + articleCounter + " articles!");
@@ -28,12 +28,16 @@ $("#scrape").on("click", function(event){
 });
 
 // Whenever someone clicks a p tag
+$("#addNotes").on("click", function(event) {
+  alert("AN working");
+});
+
+
 $(document).on("click", "p", function() {
   // Empty the notes from the note section
   $("#notes").empty();
   // Save the id from the p tag
   var thisId = $(this).attr("data-id");
-  alert("You are saving this article" + "data-id");
 
   // Now make an ajax call for the Article
   $.ajax({
